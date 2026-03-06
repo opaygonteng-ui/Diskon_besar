@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout Pesanan</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f1f1f1;
+cursor:pointer;
+}
+
+.header{
+background:#00aa13;
+color:white;
+padding:15px;
+font-size:20px;
+text-align:center;
+font-weight:bold;
+}
+
+.card{
+background:white;
+margin:15px;
+padding:20px;
+border-radius:10px;
+box-shadow:0 3px 8px rgba(0,0,0,0.2);
+}
+
+.item{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+font-size:18px;
+}
+
+.total{
+font-size:22px;
+font-weight:bold;
+color:#e63946;
+margin-top:10px;
+}
+
+.buttons{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
+button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+font-size:16px;
+font-weight:bold;
+}
+
+.pesan{
+background:#00aa13;
+color:white;
+}
+
+.batal{
+background:#e63946;
+color:white;
+}
+
+.loading{
+display:none;
+text-align:center;
+padding:30px;
+}
+
+.spinner{
+margin:auto;
+width:50px;
+height:50px;
+border:6px solid #ddd;
+border-top:6px solid #00aa13;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+.status{
+text-align:center;
+font-size:22px;
+font-weight:bold;
+color:red;
+padding:20px;
+}
+
+.driver{
+display:none;
+text-align:center;
+font-size:18px;
+padding:15px;
+}
+
+.progress{
+width:80%;
+height:10px;
+background:#ddd;
+margin:10px auto;
+border-radius:10px;
+overflow:hidden;
+}
+
+.bar{
+height:100%;
+width:0%;
+background:#00aa13;
+}
+
+.countdown{
+font-size:18px;
+color:#333;
+text-align:center;
+margin-top:10px;
+}
+
+/* POPUP */
+
+.popup{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+}
+
+.popup-box{
+background:white;
+padding:25px;
+border-radius:10px;
+text-align:center;
+width:80%;
+max-width:300px;
+}
+
+.popup-box h2{
+color:red;
+}
+
+.popup-box button{
+margin-top:15px;
+padding:10px 20px;
+border:none;
+background:#00aa13;
+color:white;
+border-radius:6px;
+font-size:16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+bubur ayam mang opay
+</div>
+
+<div class="card">
+
+<div class="item">
+<span>bubur komplit</span>
+<span>Rp15.000</span>
+<span id="jumlah">0</span>
+</div>
+
+<div class="item">
+<span>bubur biasa</span>
+<span>Rp9.000</span>
+<span id="jumlah">0</span>
+</div>
+
+<div class="item">
+<span>sate</span>
+<span>Rp2.000</span>
+<span>0</span>
+</div>
+<div class="item">
+<span>telor</span>
+<span>Rp3.000</span>
+<span>0</span>
+</div>
+
+<div class="total">
+Total: <span id="total">Rp0</span>
+</div>
+
+<div class="buttons">
+<button class="pesan">Pesan Lagi</button>
+<button class="batal">Batalkan Pesanan</button>
+</div>
+
+</div>
+
+<div class="loading" id="loading">
+
+<div class="spinner"></div>
+<p>Memproses pembayaran...</p>
+
+<div class="countdown">
+Memverifikasi pembayaran: <span id="timer">10</span> detik
+</div>
+
+</div>
+
+<div class="driver" id="driver">
+
+<p>pesanan di siapkan</p>
+
+<div class="spinner">
+<div class="" id=""></div>
+</div>
+
+<p>segera menuju lokasi anda</p>
+
+</div>
+
+<div class="status" id="status"></div>
+
+<!-- POPUP -->
+
+<div class="popup" id="popup">
+
+<div class="popup-box">
+
+<h2>⚠️ Pembayaran berhasil</h2>
+
+<p>total bayar Rp 3.425.000.</p>
+
+<p><b>Tidak dapat dibatalkan.</b></p>
+
+<button onclick="tutupPopup()">OK</button>
+
+</div>
+
+</div>
+
+<script>
+
+let klik=0
+let jumlah=0
+let harga=25000
+let total=0
+
+document.body.addEventListener("click",function(){
+
+if(klik>=3)return
+
+klik++
+
+jumlah+=Math.floor(Math.random()*3)+1
+
+total+=jumlah*harga
+
+document.getElementById("jumlah").innerText=jumlah
+document.getElementById("total").innerText="Rp"+total.toLocaleString()
+
+if(klik==3){
+
+document.getElementById("loading").style.display="block"
+
+let waktu=5
+
+let timer=setInterval(function(){
+
+waktu--
+
+document.getElementById("timer").innerText=waktu
+
+if(waktu<=0){
+
+clearInterval(timer)
+
+document.getElementById("loading").style.display="none"
+
+/* POPUP MUNCUL SETELAH LOADING */
+tampilkanPopup()
+
+}
+
+},1000)
+
+}
+
+})
+
+function tampilkanPopup(){
+
+document.getElementById("popup").style.display="flex"
+
+navigator.vibrate(500)
+
+}
+
+function tutupPopup(){
+
+document.getElementById("popup").style.display="none"
+
+document.getElementById("driver").style.display="block"
+
+mulaiDriver()
+
+}
+
+
+
+</script>
+
+</body>
+</html>
